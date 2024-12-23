@@ -59,9 +59,9 @@
 					<div class="sidebar-box p-5 rounded">
 						<h3 class="heading">Categories</h3>
 						<ul class="categories">
-							<li><a href="#">Culture <span>({{ $countCulture }})</span></a></li>
-							<li><a href="#">Business <span>({{$countBusiness}})</span></a></li>
-							<li><a href="#">Politics <span>({{$countPolitics}})</span></a></li>
+							<li><a href="{{url('/category/culture')}}">Culture <span>({{ $countCulture }})</span></a></li>
+							<li><a href="{{url('/category/business')}}">Business <span>({{$countBusiness}})</span></a></li>
+							<li><a href="{{url('/category/politics')}}">Politics <span>({{$countPolitics}})</span></a></li>
 						</ul>
 					</div>
 					<!-- END sidebar-box -->
