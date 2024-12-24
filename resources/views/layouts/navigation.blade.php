@@ -8,15 +8,24 @@
                         <a href="{{route('dashboard')}}" ><img src="{{asset('assets/images/cms_logo.png')}}" style="max-width: 50px"></a>
                     </div>
                     <div class="col-8 text-center">
-                        
+
 
                         <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu mx-auto" id="nav">
+                            @auth
                             <li class="" ><a href="{{route('dashboard')}}">Home</a></li>
+                            @if(Auth::user()->role == 'admin')
+                            <li class=""><a href="{{route('admin.list')}}">Admins</a></li>
+                            <li class=""><a href="{{route('admin.categories')}}">Categories</a></li>
+                            <li class=""><a href="{{route('admin.posts')}}">Posts</a></li>
+                            @endif
+                            @if(Auth::user()->role == 'user')
                             <li class="" ><a href="{{url('/category/culture')}}">Culture</a></li>
                             <li class="" ><a href="{{url('/category/business')}}">Business</a></li>
                             <li class="" ><a href="{{url('/category/politics')}}">Politics</a></li>
                             <li class="" ><a href="{{url('/contact_me')}}">Contact Me</a></li>
                             <li class="" ><a href="{{url('/about_me')}}">About Me</a></li>
+                            @endif
+                            @endauth
 
                             @guest
                                 <li><a href="{{ route('login') }}">Login</a></li>
@@ -55,8 +64,11 @@
                                         </x-dropdown>
                                     </div>
                                 </li>
+                                @if(Auth::user()->role == 'user')
                                 <li><a href="{{route('posts.create')}}">Create</a></li>
-                            @endauth
+                                @endif
+
+
                         </ul>
 
                     </div>
@@ -70,6 +82,7 @@
                             <span class="bi-search"></span>
                         </form>
                     </div>
+                    @endauth
                 </div>
             </div>
         </div>

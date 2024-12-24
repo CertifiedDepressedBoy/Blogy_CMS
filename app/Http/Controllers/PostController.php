@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,6 +16,10 @@ class PostController extends Controller
      */
     public function index()
     {
+        $postsCount = Post::count();
+        $categoryCount = Category::count();
+        $adminsCount = User::where('role','admin')->count();
+
         $headCulture = Post::all()->sortByDesc('id')->where('category_id',1)->take(2);
         $headBusiness = Post::all()->sortByDesc('id')->where('category_id',2)->take(2);
         $headPolitic = Post::all()->sortByDesc('id')->where('category_id',3)->take(1);
@@ -28,7 +33,7 @@ class PostController extends Controller
 
         $politics = Post::all()->sortByDesc('created_at')->where('category_id',3)->take(6);
 
-        return view('dashboard',compact('headCulture','headPolitic','headBusiness','business','businessNoImg','businessall','culture','cultureNoImg','politics'));
+        return view('dashboard',compact('headCulture','headPolitic','headBusiness','business','businessNoImg','businessall','culture','cultureNoImg','politics','postsCount','categoryCount','adminsCount'));
     }
 
     /**
@@ -80,7 +85,7 @@ class PostController extends Controller
                     ->leftJoin('categories','posts.category_id','categories.id')
                     ->first();
                     if ($post) {
-                        Post::where('id', $id)->update(['view_count' => $post->view_count + 1]);
+                        Post::where('id', $id)->increment('view_count');
                     }
 
         //comment show
@@ -88,12 +93,13 @@ class PostController extends Controller
                     ->where('post_id',$id)
                     ->get();
 
-        $popular = Post::select('posts.id as id','title','description','image','posts.created_at','categories.name as category_name')
-                    ->where('category_id','1')
+        $popular = Post::select('posts.id as id','title','description','image','posts.created_at','posts.view_count','categories.name as category_name','categories.id as category_id')
+                    ->where('category_id',$post->category_id)
                     ->leftJoin('categories','posts.category_id','categories.id')
-                    ->orderBy('view_count','desc')
+                    ->orderBy('posts.view_count','desc')
                     ->take(3)
                     ->get();
+                    // dd($popular->toArray());
 
         $countCulture = Post::where('category_id','1')->count();
         $countBusiness = Post::where('category_id','2')->count();
@@ -140,8 +146,14 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
+
+        $post = Post::select('image')->where('id',$id)->first();
+        if( file_exists(public_path('/assets/images/'.$post['image'])) ){
+            unlink(public_path('/assets/images/'.$post['image']));
+        }
         Post::where('id',$id)->delete();
-        return back();
+
+        return to_route('dashboard');
     }
 
 
@@ -164,6 +176,7 @@ class PostController extends Controller
     //comment delete
     public function commentDelete($id){
         Comment::where('id',$id)->delete();
+
         return back();
     }
 

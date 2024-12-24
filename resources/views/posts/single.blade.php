@@ -1,5 +1,7 @@
 <x-app-layout>
-<div class="site-cover site-cover-sm same-height overlay single-page" style="background-image: url('{{ asset('assets/images/' . $post->image) }}');">
+    @if(isset($post))
+    <div class="site-cover site-cover-sm same-height overlay single-page"
+    style="background-image: url('{{  $post->image ? asset('assets/images/' . $post->image) : asset('assets/images/default.jpg') }}');">
     <div class="container">
       <div class="row same-height justify-content-center">
         <div class="col-md-6">
@@ -32,18 +34,20 @@
             <p>Categories:   <a href="#" class="fw-bold text-dark">{{$post->category_name}}</a> </p>
           </div>
 
-            @if($post->user_id == Auth::id())
+            @if($post->user_id == Auth::id() || Auth::user()->role == 'admin')
                 <div class="d-flex justify-content-end">
                     <form action="{{route('posts.delete',$post->id)}}" method="POST">
                         @csrf
                         @method('DELETE')
                         <input type="submit" value="Delete Post" class="btn btn-danger mx-2 text-center">
                     </form>
+                    @if(Auth::user()->role != 'admin')
                     <form action="{{route('posts.edit',$post->id)}}" method="POST">
                         @csrf
                         @method('patch')
                         <input type="submit" value="Edit Post" class="btn btn-primary mx-2 text-center">
                     </form>
+                    @endif
                 </div>
             @endif
 
@@ -62,7 +66,7 @@
                       <p>{{$item->comment}}</p>
                       <div class="d-flex justify-content-end align-items-center">
                         <p><a href="" class="py-2 px-2 rounded mx-2 btn btn-sm btn-secondary mt-1">Reply</a></p>
-                        @if($item->user_id == Auth::id() || $post->user_id == Auth::id())
+                        @if($item->user_id == Auth::id() || $post->user_id == Auth::id() || Auth::user()->role == 'admin')
                         <form action="{{ route('posts.comment.delete',$item->id) }}" method="POST">
                             @csrf
                             @method('DELETE')
@@ -79,7 +83,7 @@
 
             <div class="comment-form-wrap pt-5 ">
               <h3 class="mb-5">Leave a comment</h3>
-              <form action="{{url('posts/comment/'.$post->id)}}" method="POST" class="p-5 bg-light">
+              <form action="{{route('posts.comment.create',$post->id)}}" method="POST" class="p-5 bg-light">
                 @csrf
                 <div class="form-group">
                   <label for="message">Message</label>
@@ -161,3 +165,4 @@
   </section>
 
 </x-app-layout>
+@endif

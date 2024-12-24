@@ -1,4 +1,5 @@
 <x-app-layout>
+@if(Auth::user()->role != 'admin')
 <div>
     <!-- Start retroy layout blog posts -->
 	<section class="section bg-light">
@@ -197,4 +198,42 @@
 	</section>
 
 </div>
+@else
+<div class="container-fluid mt-5">
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body bg-primary rounded shadow-sm text-white">
+            <h5 class="card-title">Posts</h5>
+            <!-- <h6 class="card-subtitle mb-2 text-muted">Bootstrap 4.0.0 Snippet by pradeep330</h6> -->
+            <p class="card-text">Number of posts: {{$postsCount}}</p>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body bg-primary rounded shadow-sm text-white">
+            <h5 class="card-title">Categories</h5>
+
+            <p class="card-text">Number of categories: {{$categoryCount}} </p>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body bg-primary rounded shadow-sm text-white">
+            <h5 class="card-title">Admins</h5>
+
+            <p class="card-text">Number of admins: {{$adminsCount}} </p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+          </div>
+
+@endif
 </x-app-layout>
